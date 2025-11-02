@@ -1,15 +1,15 @@
-// api/gemini.js  (CommonJS)
+// api/gemini.js
 module.exports = async function handler(req, res) {
   const apiKey = process.env.GEMINI_API_KEY;
 
-  // Ping de salud para probar en producción
+  // Healthcheck
   if (req.method === 'GET' && String(req.query?.ping) === '1') {
     if (!apiKey) return res.status(200).json({ ok: false, reason: 'NO_API_KEY' });
     try {
       const r = await fetch('https://generativelanguage.googleapis.com/v1/models?key=' + apiKey);
       return res.status(200).json({ ok: r.ok, status: r.status });
-    } catch {
-      return res.status(200).json({ ok: false, reason: 'FETCH_ERROR' });
+    } catch (e) {
+      return res.status(200).json({ ok: false, reason: 'FETCH_ERROR', debug: String(e) });
     }
   }
 
@@ -23,10 +23,10 @@ module.exports = async function handler(req, res) {
 
     const endpoints = [
       'https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent',
-      'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent'
+      'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent',
+      'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent'
     ];
 
-    let text = '';
     for (const url of endpoints) {
       const resp = await fetch(url + '?key=' + apiKey, {
         method: 'POST',
@@ -36,27 +36,30 @@ module.exports = async function handler(req, res) {
           generationConfig: {
             temperature: 0.6,
             maxOutputTokens: 900,
-            // CLAVE: el modelo devuelve JSON puro
             responseMimeType: "application/json"
           }
         })
       });
 
+      // Si el endpoint falla, devolvemos info útil
       if (!resp.ok) {
-        if (resp.status === 401 || resp.status === 403)
-          return res.status(200).json({ output: 'Clave inválida o permisos insuficientes. Modo demo.' });
-        if (resp.status === 404) continue; // prueba el siguiente endpoint
-        return res.status(200).json({ output: `IA no disponible (${resp.status}). Modo demo.` });
+        const body = await resp.text().catch(() => '');
+        // 404: modelo no disponible para tu cuenta/proyecto
+        if (resp.status === 404) continue;
+        // 401/403: clave inválida o sin permisos
+        return res.status(200).json({
+          output: `IA no disponible (${resp.status}).`,
+          debug: { status: resp.status, body }
+        });
       }
 
       const data = await resp.json().catch(() => ({}));
-      text = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
-      if (text) break;
+      const text = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+      if (text) return res.status(200).json({ output: text });
     }
 
-    if (!text) text = 'IA no disponible temporalmente. Modo demo.';
-    return res.status(200).json({ output: text });
-  } catch {
-    return res.status(200).json({ output: 'Error interno. Modo demo.' });
+    return res.status(200).json({ output: 'IA no disponible (modelos no válidos).', debug: { note: 'Todos los endpoints devolvieron 404' } });
+  } catch (e) {
+    return res.status(200).json({ output: 'Error interno. Modo demo.', debug: String(e) });
   }
 };
