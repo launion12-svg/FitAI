@@ -1,1 +1,230 @@
-<!doctype html><meta charset='utf-8'><title>FitAI</title><p>Instalador listo. Sube tus archivos reales aquí.</p>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>FitAI 💪</title>
+  <meta name="theme-color" content="#e11d48" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" />
+  <style>
+    :root {
+      --bg: #1b1b1b;
+      --text: #e5e5e5;
+      --card: #242424;
+      --accent: #e11d48;
+      --accent-light: #f43f5e;
+      --shadow: rgba(0,0,0,0.3);
+    }
+    [data-theme="light"] {
+      --bg: #f5f5f5;
+      --text: #1b1b1b;
+      --card: #ffffff;
+      --accent: #e11d48;
+      --accent-light: #f87171;
+      --shadow: rgba(0,0,0,0.1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background: linear-gradient(135deg, var(--accent), var(--accent-light));
+      padding: 20px;
+      text-align: center;
+      color: white;
+      font-weight: 700;
+      font-size: 1.6rem;
+      box-shadow: 0 2px 8px var(--shadow);
+    }
+    nav {
+      display: flex;
+      justify-content: space-around;
+      background: var(--card);
+      border-bottom: 1px solid var(--shadow);
+      padding: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    nav button {
+      background: none;
+      border: none;
+      color: var(--text);
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: color 0.2s;
+    }
+    nav button.active {
+      color: var(--accent-light);
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 3px;
+    }
+    main { flex: 1; padding: 20px; max-width: 900px; margin: 0 auto; width: 100%; }
+
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px var(--shadow);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .card h2 {
+      color: var(--accent-light);
+      font-size: 1.3rem;
+      margin-bottom: 8px;
+    }
+    .exercise-item {
+      border: 1px solid var(--shadow);
+      border-radius: 10px;
+      padding: 15px;
+      margin-top: 10px;
+    }
+    .exercise-item h3 {
+      color: var(--accent-light);
+      margin-bottom: 5px;
+    }
+    .exercise-item small {
+      display: block;
+      color: #999;
+      margin-top: 5px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      font-size: 0.9rem;
+      color: #888;
+      border-top: 1px solid var(--shadow);
+    }
+
+    /* Botón de cambio de tema */
+    #themeToggle {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      font-size: 1.4rem;
+      box-shadow: 0 4px 12px var(--shadow);
+      cursor: pointer;
+      transition: transform 0.2s;
+      z-index: 999;
+    }
+    #themeToggle:active { transform: scale(0.9); }
+  </style>
+</head>
+
+<body>
+  <header>FitAI 💪<br><small>Tu entrenador personal inteligente</small></header>
+
+  <nav>
+    <button id="tab-ej" class="active">🏋️ Ejercicios</button>
+    <button id="tab-nutri">🥗 Nutrición</button>
+    <button id="tab-lista">🛒 Lista</button>
+  </nav>
+
+  <main id="content">
+    <!-- Vista inicial -->
+    <section id="sec-ej">
+      <div class="card">
+        <h2>Tu Plan de Ejercicios</h2>
+        <p>3 días de entrenamiento — fuerza y tonificación.</p>
+
+        <div class="exercise-item">
+          <h3>#1 Press de banca</h3>
+          <p>Ejercicio fundamental para pecho. Acuéstate en un banco plano con los pies apoyados. Baja la barra hasta el pecho y empuja hacia arriba controlando el movimiento.</p>
+          <small>Series: 4 · Reps: 8–12 · Descanso: 90s</small>
+        </div>
+
+        <div class="exercise-item">
+          <h3>#2 Remo con barra</h3>
+          <p>Para el desarrollo de la espalda. Inclina el torso a 45°, agarra la barra y tira hacia tu abdomen contrayendo los omóplatos.</p>
+          <small>Series: 4 · Reps: 10–12 · Descanso: 90s</small>
+        </div>
+
+        <div class="exercise-item">
+          <h3>#3 Sentadilla</h3>
+          <p>Ponte de pie con los pies al ancho de los hombros, baja controlando el movimiento manteniendo la espalda recta, y sube empujando desde los talones.</p>
+          <small>Series: 4 · Reps: 12 · Descanso: 60s</small>
+        </div>
+      </div>
+    </section>
+
+    <section id="sec-nutri" style="display:none;">
+      <div class="card">
+        <h2>Plan Nutricional</h2>
+        <p>Calorías totales: 2200 kcal</p>
+        <ul>
+          <li>🍳 Desayuno: Avena, plátano y claras</li>
+          <li>🍗 Almuerzo: Pollo, arroz y verduras</li>
+          <li>🥩 Cena: Ternera con ensalada</li>
+          <li>🍎 Snack: Fruta o yogur</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="sec-lista" style="display:none;">
+      <div class="card">
+        <h2>Lista de la Compra</h2>
+        <ul>
+          <li>🧃 Avena — 1kg</li>
+          <li>🥩 Pechuga de pollo — 1kg</li>
+          <li>🥦 Verduras variadas</li>
+          <li>🍎 Fruta variada</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer>© 2025 FitAI. Todos los derechos reservados.</footer>
+
+  <button id="themeToggle" title="Cambiar tema">🌓</button>
+
+  <script>
+    // --- Cambio de tema ---
+    const toggle = document.getElementById('themeToggle');
+    const current = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', current);
+
+    toggle.addEventListener('click', () => {
+      const newTheme = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+    });
+
+    // --- Navegación ---
+    const tabs = {
+      ej: document.getElementById('tab-ej'),
+      nutri: document.getElementById('tab-nutri'),
+      lista: document.getElementById('tab-lista')
+    };
+    const secs = {
+      ej: document.getElementById('sec-ej'),
+      nutri: document.getElementById('sec-nutri'),
+      lista: document.getElementById('sec-lista')
+    };
+
+    function show(tab) {
+      Object.values(secs).forEach(s => s.style.display = 'none');
+      Object.values(tabs).forEach(t => t.classList.remove('active'));
+      secs[tab].style.display = 'block';
+      tabs[tab].classList.add('active');
+    }
+
+    tabs.ej.onclick = () => show('ej');
+    tabs.nutri.onclick = () => show('nutri');
+    tabs.lista.onclick = () => show('lista');
+  </script>
+</body>
+</html>
