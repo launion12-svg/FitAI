@@ -1,20 +1,9 @@
 {
-  "name": "FitAI",
+  "name": "FitAI – Tu entrenador personal",
   "short_name": "FitAI",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#f43f5e",
-  "icons": [
-    {
-      "src": "/assets/icons/fitai-icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "/assets/icons/fitai-icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ]
+  "theme_color": "#f43f5e"
+  // "icons": []   ← puedes quitar el bloque icons temporalmente
 }
