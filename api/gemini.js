@@ -1,15 +1,12 @@
-// /api/gemini.js — Vercel Serverless (CommonJS)
 module.exports = async function handler(req, res) {
   const apiKey = process.env.GEMINI_API_KEY;
 
-  // Comprobación rápida de clave: GET /api/gemini?ping=1
   if (req.method === 'GET' && String(req.query?.ping) === '1') {
     if (!apiKey) return res.status(200).json({ ok: false, reason: 'NO_API_KEY' });
     try {
       const r = await fetch('https://generativelanguage.googleapis.com/v1/models?key=' + apiKey);
-      const text = await r.text();
-      return res.status(200).json({ ok: r.ok, status: r.status, preview: text.slice(0, 800) });
-    } catch {
+      return res.status(200).json({ ok: r.ok, status: r.status });
+    } catch (e) {
       return res.status(200).json({ ok: false, reason: 'FETCH_ERROR' });
     }
   }
@@ -18,52 +15,36 @@ module.exports = async function handler(req, res) {
 
   try {
     const { input, system } = req.body || {};
-    if (!apiKey) return res.status(200).json({ output: 'Modo demo sin IA (falta GEMINI_API_KEY).' });
+    if (!apiKey) return res.status(200).json({ output: 'Modo demo: añade GEMINI_API_KEY en Vercel.' });
 
     const prompt = (system ? system + '\n\n' : '') + String(input || '');
-
-    // 👉 Prioriza 2.5 (tu cuenta lo tiene), con fallbacks
-    const endpoints = [
+    const urls = [
       'https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent',
-      'https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash-latest:generateContent',
-      // Fallbacks 1.5 por si acaso
-      'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent',
-      'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent',
-      // Compatibilidad antigua
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent'
+      'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent'
     ];
 
     let text = '';
-    for (const url of endpoints) {
+    for (const url of urls) {
       const resp = await fetch(url + '?key=' + apiKey, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents: [{ role: 'user', parts: [{ text: prompt }] }],
-          generationConfig: { temperature: 0.6, maxOutputTokens: 800 }
+          generationConfig: { temperature: 0.6, maxOutputTokens: 900 }
         })
       });
-
       if (!resp.ok) {
-        // 401/403: clave sin permisos
-        if (resp.status === 401 || resp.status === 403) {
-          return res.status(200).json({ output: 'IA no disponible (clave inválida o permisos). Fallback demo.' });
-        }
-        // 404: prueba siguiente endpoint
-        if (resp.status === 404) continue;
-        // Otros: error genérico + fallback
-        return res.status(200).json({ output: `IA no disponible (${resp.status}). Fallback demo.` });
+        if (resp.status === 401 || resp.status === 403) return res.status(200).json({ output: 'Clave inválida o sin permisos (fallback demo).' });
+        continue;
       }
-
-      const data = await resp.json().catch(() => ({}));
+      const data = await resp.json().catch(()=>({}));
       text = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
       if (text) break;
     }
 
-    if (!text) return res.status(200).json({ output: 'IA no disponible (modelo/ruta). Fallback demo.' });
+    if (!text) text = 'IA no disponible temporalmente. Modo demo.';
     return res.status(200).json({ output: text });
-  } catch {
-    return res.status(200).json({ output: 'IA no disponible. Fallback demo.' });
+  } catch (e) {
+    return res.status(200).json({ output: 'Error interno. Modo demo.' });
   }
 };
