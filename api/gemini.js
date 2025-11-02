@@ -1,4 +1,3 @@
-// api/gemini.js - CommonJS for Vercel Node 20
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
   try {
@@ -21,8 +20,8 @@ module.exports = async function handler(req, res) {
 
     if (!resp.ok) return res.status(200).json({ output: 'IA no disponible (' + resp.status + '). Fallback demo.' });
     const data = await resp.json();
-    const text = (data?.candidates?.[0]?.content?.parts?.[0]?.text || 'Sin respuesta').trim();
-    return res.status(200).json({ output: text });
+    const text = (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) || 'Sin respuesta';
+    return res.status(200).json({ output: String(text).trim() });
   } catch {
     return res.status(200).json({ output: 'IA no disponible. Fallback demo.' });
   }
