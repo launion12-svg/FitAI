@@ -1,0 +1,6 @@
+Sprint 3 – Fecha, Export/Import y Adherencia (2025-11-02)
+------------------------------------------------------
+✔ Selector de fecha (Plan y Nutrición): el log depende de la fecha elegida.
+✔ Exportar día / Exportar todo e Importar desde JSON (merge de días).
+✔ Resumen diario: adherencia nutricional y de entrenamiento + barra global.
+✔ PWA intacta y endpoint /api/gemini para IA.
