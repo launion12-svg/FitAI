@@ -1,5 +1,12 @@
-// @vercel/node — Google Gemini JSON out with responseMimeType
+// @vercel/node — Google Gemini JSON out (GET health, POST infer), CORS friendly
 const fetch = require('node-fetch');
+
+function setCORS(res){
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Content-Type', 'application/json');
+}
 
 const MODEL_FALLBACK = ['gemini-1.5-flash','gemini-1.5-pro','gemini-1.0-pro'];
 
@@ -13,13 +20,26 @@ function extractJson(text){
 }
 
 module.exports = async (req, res) => {
-  res.setHeader('Content-Type','application/json');
+  setCORS(res);
+  if (req.method === 'OPTIONS') { res.status(204).end(); return; }
+
+  if (req.method === 'GET') {
+    const hasKey = !!process.env.GEMINI_API_KEY;
+    res.status(200).json({ ok: true, endpoint: '/api/gemini', method: 'POST', body: { prompt: 'string' }, env: { GEMINI_API_KEY: hasKey } });
+    return;
+  }
+
+  if (req.method !== 'POST') {
+    res.status(405).json({ error: 'Method not allowed' });
+    return;
+  }
+
   try{
     const key = process.env.GEMINI_API_KEY;
     if(!key){ res.status(500).json({ error:'Falta GEMINI_API_KEY' }); return; }
 
-    const body = req.method === 'POST' ? req.body : {};
-    const prompt = body.prompt || 'Genera un plan compacto de entrenamiento+nutrición+lista en JSON con claves exercises[], nutrition, shopping_list[] (ES).';
+    const body = req.body || {};
+    const prompt = body.prompt || 'Genera un plan de entrenamiento+nutrición+lista (JSON con exercises[], nutrition, shopping_list[]).';
 
     let lastErr = null;
     for(const model of MODEL_FALLBACK){
@@ -35,8 +55,7 @@ module.exports = async (req, res) => {
         const r = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
         if(!r.ok){ lastErr = new Error(`Modelo ${model} status ${r.status}`); continue; }
         const j = await r.json();
-        let text = '';
-        try{ text = j.candidates?.[0]?.content?.parts?.[0]?.text || ''; }catch(e){ text=''; }
+        let text = j?.candidates?.[0]?.content?.parts?.[0]?.text || '';
         let parsed;
         try{ parsed = JSON.parse(text); } catch{ parsed = extractJson(text); }
         if(!parsed){ res.status(200).json({ text }); return; }
