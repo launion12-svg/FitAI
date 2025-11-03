@@ -1280,6 +1280,7 @@
             }
         }
     </style>
+<script src="ai-override.js"></script>
 </head>
 <body>
     <div id="app"></div>
@@ -2456,9 +2457,7 @@ Responde en formato JSON:
                         <button class="tab ${appState.currentTab === 'progreso' ? 'active' : ''}" onclick="changeTab('progreso')">
                             📊 Progreso
                         </button>
-                        <button class="tab" onclick="showApiModal()">
-                            ⚙️
-                        </button>
+                        
                     </div>
                     
                     <div class="dashboard-content">
@@ -2469,7 +2468,7 @@ Responde en formato JSON:
                         ${appState.currentTab === 'progreso' ? renderProgress() : ''}
                     </div>
                     
-                    ${appState.showApiModal ? renderApiModal() : ''}
+                    ''
                 </div>
             `;
         }
@@ -3125,7 +3124,7 @@ Responde en formato JSON:
                 }];
             }
             
-            const hasApiKey = localStorage.getItem('gemini_api_key');
+            const hasApiKey = true;
             
             return `
                 <div class="card">
@@ -3551,16 +3550,7 @@ Responde en formato JSON:
         }
 
         async function generatePlanWithAI() {
-            const apiKey = localStorage.getItem('gemini_api_key');
-            
-            if (!apiKey) {
-                // Si no hay API key, usar plan simulado
-                console.log('No API key found, using mock data');
-                appState.userPlan = mockPlan;
-                appState.currentScreen = 'dashboard';
-                render();
-                return;
-            }
+            const apiKey = 'USE_SERVER';
 
             // Mostrar loading
             document.getElementById('app').innerHTML = `
@@ -3893,31 +3883,7 @@ IMPORTANTE:
             appState.isLoading = true;
             render();
             
-            const apiKey = localStorage.getItem('gemini_api_key');
-            
-            if (!apiKey) {
-                // Respuesta simulada si no hay API key
-                setTimeout(() => {
-                    const responses = [
-                        "¡Excelente pregunta! Para ese ejercicio, asegúrate de mantener la espalda recta y el core activado. Si sientes dolor, reduce el peso y enfócate primero en la técnica correcta.",
-                        "Entiendo tu preocupación. Ese alimento puede sustituirse por una opción similar. ¿Prefieres algo más específico de Mercadona, Aldi o Eroski?",
-                        "¡Muy bien! Para optimizar tus resultados, te recomiendo ajustar ligeramente tu plan. Mantén la constancia y verás resultados en pocas semanas.",
-                        "Perfecto, puedo ayudarte con eso. Recuerda que la técnica es más importante que el peso. Empieza ligero y ve progresando gradualmente.",
-                        "⚠️ Este es un mensaje simulado. Configura tu API key de Gemini en el botón ⚙️ Configurar API para obtener respuestas reales de IA."
-                    ];
-                    
-                    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-                    appState.chatMessages.push({ role: 'assistant', content: randomResponse });
-                    appState.isLoading = false;
-                    render();
-                    
-                    setTimeout(() => {
-                        const container = document.getElementById('chatContainer');
-                        if (container) container.scrollTop = container.scrollHeight;
-                    }, 100);
-                }, 1500);
-                return;
-            }
+            const apiKey = 'USE_SERVER';
             
             // Respuesta real con API de Gemini
             sendMessageWithAI(userMessage, apiKey);
