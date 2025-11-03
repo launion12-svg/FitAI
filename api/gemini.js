@@ -1,5 +1,4 @@
 // @vercel/node — Google Gemini JSON out (GET health, POST infer), CORS friendly
-const fetch = require('node-fetch');
 
 function setCORS(res){
   res.setHeader('Access-Control-Allow-Origin', '*');
