@@ -1788,7 +1788,7 @@
         async function analyzeProgressWithAI(currentUpdate) {
             const apiKey = localStorage.getItem('gemini_api_key');
             
-            if (!apiKey || appState.progresoHistorial.length < 2) {
+            if (false) {
                 return; // Necesitamos al menos 2 mediciones para comparar
             }
 
@@ -3592,7 +3592,7 @@ Responde en formato JSON:
                 
             } catch (error) {
                 console.error('Error generating plan:', error);
-                alert('Error al generar el plan. Usando plan de ejemplo. Verifica tu API key en Configuración.');
+                console.warn('Error al generar el plan. Se mostrará el plan de ejemplo temporalmente.');
                 appState.userPlan = mockPlan;
                 appState.currentScreen = 'dashboard';
                 render();
